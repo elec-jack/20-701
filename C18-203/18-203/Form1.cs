@@ -418,6 +418,7 @@ namespace _18_203
                 //PC->PLC寫檔完成
                 PLC1.Write(PLCSaveScrewDataFinish, 1);
                 DataSaveCount = 0;
+                tb_ItemBarcode.Text = "";
             }
             //PLC讀取
             ReadPLCDevice();
