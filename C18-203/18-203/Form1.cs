@@ -64,7 +64,7 @@ namespace _18_203
         private StanleyScrewData ssd;
         #endregion
         #region --定義機器相關--
-        private string oldItemBarCode = "";
+        private string oldCheckBarcodeHeader = "";
         private string stringNoBarcode = "NoBarcode";
         private int NoBarcodeSeriealNo = 0, DataSaveCount = 0;
         private ObjectBarcodeAndCount CurrentcountScrew = new ObjectBarcodeAndCount();
@@ -104,6 +104,7 @@ namespace _18_203
             BarcodeHeader = Convert.ToInt32(ws.Cell("D2").Value);
             ScrewPartNo = Convert.ToString(ws.Cell("E2").Value);
             BodyBarcodeCheckCode = Convert.ToString(ws.Cell("F2").Value);
+            oldCheckBarcodeHeader = BodyBarcodeCheckCode;
             //display物件品號
             tb_ScrewPartNo.Text = ScrewPartNo;
             tbBodyBarcodeCheckCode.Text = BodyBarcodeCheckCode;
@@ -209,6 +210,7 @@ namespace _18_203
                 //檢查BARCODE
                 BarCodeCheck();
                 myData.SetProductBodyID(ss);
+                tb_ItemBarcode.Text = ssd.ItemBarcode;
             }
             catch (Exception error)
             {
@@ -458,7 +460,10 @@ namespace _18_203
         {
             BodyBarcodeCheckCode = PLC1.ReadString("D5018", 10).Content;
             tbBodyBarcodeCheckCode.Text = BodyBarcodeCheckCode;
-            pb_SetPartNo_Click(null, null);
+            if (!oldCheckBarcodeHeader.Equals(BodyBarcodeCheckCode))
+            {
+                pb_SetPartNo_Click(null, null);
+            }
             string itemBarcode = tb_ItemBarcode.Text;//取得現在的BARCODE
             //檢查條碼頭碼是否和現在使用TYPE相同
             try
@@ -468,7 +473,7 @@ namespace _18_203
                 {
                     //OK
                     PLC1.Write(PLCBarcodeCheck, (Int16)0);
-                    oldItemBarCode = itemBarcode;
+                    oldCheckBarcodeHeader = BodyBarcodeCheckCode;
                 }
                 else
                 {
@@ -480,12 +485,6 @@ namespace _18_203
             {
                 tb_Message.Text = e.ToString();
             }
-            //show
-            //ShowBarcode(itemBarcode,oldScrewBarcode);
-
-            //Down
-            //tb_oldbarcode.Text = oldItemBarCode;
-            //tb_BarcodeCheckFlag.Text = "0";
             PLC1.Write(PLCBarcodeCheckStartFlag, (Int16)0);
         }
         //取得物件BARCODE
@@ -513,7 +512,6 @@ namespace _18_203
             #endregion
             #region --工程頁--
             tb_CountOfScrew_E.Text = CurrentcountScrew.Count.ToString();
-            tbOldBodyBarcode.Text = oldItemBarCode;
             #endregion
             #region --上報資料頁--
             //狀態
@@ -798,17 +796,6 @@ namespace _18_203
         private void button1_Click(object sender, EventArgs e)
         {
             BarCodeCheck();
-        }
-
-        /// <summary>
-        /// 清除前筆條碼
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void pbDeleteOldBarcode_Click(object sender, EventArgs e)
-        {
-            oldItemBarCode = " ";
-            tbOldBodyBarcode.Text = oldItemBarCode;
         }
         #endregion
     }
