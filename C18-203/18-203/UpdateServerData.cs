@@ -10,13 +10,11 @@ namespace _18_203
     public class UpdateServerData
     {
         #region --一般define--
-        private string recordFilePath = @"D:\Resource\record.txt";
-        private string backupFilePath= @"D:\Resource\backuprecord.txt";
+        private string recordFilePath = @"D:\RP20-701\Resource\record.txt";
+        private string backupFilePath= @"D:\RP20-701\Resource\backuprecord.txt";
         private int _noOfOeeTime;
         private int PowerOnTotalTime,MachineRunTotalTime;
         private Timer t1 = new Timer();
-        private Timer t2 = new Timer();
-        private Timer t3 = new Timer();
         #endregion
         #region --Create--
         /// <summary>
@@ -48,11 +46,13 @@ namespace _18_203
                 MachineRunTotalTime = Convert.ToInt32(sr.ReadLine());
                 sr.Dispose();
             }
+            //建立Parts物件
             for (int i = 0; i < numOfParts; i++)
             {
                 parts axis = new parts();
                 _partData.Add(axis);
             }
+            //建立screw driver物件
             for (int i = 0; i < numOfAxis; i++)
             {
                 ScrewSetting setting = new ScrewSetting();
@@ -65,14 +65,16 @@ namespace _18_203
             t1.Interval = 1000;
             t1.Tick += T1_Tick;
             t1.Start();
-            t2.Interval = 10000;
-            t2.Tick += T2_Tick;
-            t2.Start();
-            t3.Interval = 60000;
-            t3.Tick += T3_Tick;
-            t3.Start();
             #endregion
         }
+        ~UpdateServerData()
+        {
+            t1.Stop();
+            t1.Dispose();
+            string str = PowerOnTotalTime.ToString() + Environment.NewLine + MachineRunTotalTime.ToString();
+            File.WriteAllText(recordFilePath, str);
+        }
+
         #endregion
         #region --OEE計時--
         private void T1_Tick(object sender, EventArgs e)
@@ -87,19 +89,6 @@ namespace _18_203
             SetOeePowerOnTime();
             SetOeeMachineRunTime();
             t1.Start();
-        }
-        private void T2_Tick(object sender, EventArgs e)
-        {
-            t2.Stop();
-            string str = PowerOnTotalTime.ToString() + Environment.NewLine + MachineRunTotalTime.ToString();
-            File.WriteAllText(recordFilePath, str);
-            t2.Start();
-        }
-        private void T3_Tick(object sender, EventArgs e)
-        {
-            t3.Stop();
-            File.Copy(recordFilePath, backupFilePath, true);
-            t3.Start();
         }
         #endregion
         #region --狀態--

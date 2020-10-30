@@ -12,8 +12,8 @@ namespace _18_203
     public partial class Form1 : Form
     {
         #region --定義初始化檔案--
-        private string initailFilePath = @"D:\Resource\initailFile.xlsx";
-        private string FilePathScrewCount = @"D:\Resource\ScrewCount.xlsx";
+        private string initailFilePath = @"D:\RP20-701\Resource\initailFile.xlsx";
+        private string FilePathParts1 = @"D:\RP20-701\Resource\Parts1.xlsx";
         private string filePath = @"D:\DataFile\";
         private string ScrewPartNo = "";
         private int BarcodeHeader=3;
@@ -138,10 +138,10 @@ namespace _18_203
             spAx[6].DataBits = 8;
             spAx[6].StopBits = StopBits.One;
             #region --通訊埠開啟,開發可PASS--
-            //for (int i = 1; i <= 6; i++)
-            //{
-            //    spAx[i].Open();
-            //}
+            for (int i = 1; i <= 6; i++)
+            {
+                spAx[i].Open();
+            }
             #endregion
             spAx[1].DataReceived += ax1_DataReceived;
             spAx[2].DataReceived += ax2_DataReceived;
@@ -195,7 +195,7 @@ namespace _18_203
         private void ax6_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
             ssd.ItemBarcode = "";
-            Thread.Sleep(300);
+            Thread.Sleep(800);
             try
             {
                 Byte[] buffer = new Byte[1024];
@@ -219,7 +219,7 @@ namespace _18_203
         //手持條碼
         private void ax5_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
-            Thread.Sleep(300);
+            Thread.Sleep(800);
             try
             {
                 Byte[] buffer = new Byte[1024];
@@ -237,7 +237,7 @@ namespace _18_203
                         ObjectBarcodeAndCount obj = new ObjectBarcodeAndCount();
                         obj.Barcode = ss;
                         obj.Count = Convert.ToInt32(newstring[3]);
-                        obj.AddNewData(FilePathScrewCount);
+                        obj.AddNewData(FilePathParts1);
                     }
                     //如果都不符合
                     if (newstring[1] != ScrewPartNo)
@@ -259,7 +259,7 @@ namespace _18_203
         //軸4
         private void ax4_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
-            Thread.Sleep(300);
+            Thread.Sleep(800);
             try
             {
                 Byte[] buffer = new Byte[1024];
@@ -268,15 +268,14 @@ namespace _18_203
                 ssd.GetRs232ScrewData(buffer, 4);
                 ssd._sd[3].ScrewDateTime = DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss");
                 GetObjectBarcode();
-
-                //扣除數量
-                CurrentcountScrew.Count = CurrentcountScrew.Count - 1;//螺絲-1
-                //判斷沒螺絲就取新資料
-                if (CurrentcountScrew.Count <= 0)
-                {
-                    CurrentcountScrew.ReloadData(FilePathScrewCount);
-                    myData.PartsData[0].SetChangePartTime();
-                }
+                ////扣除數量
+                //CurrentcountScrew.Count = CurrentcountScrew.Count - 1;//螺絲-1
+                ////判斷沒螺絲就取新資料
+                //if (CurrentcountScrew.Count <= 0)
+                //{
+                //    CurrentcountScrew.ReloadData(FilePathParts1);
+                //    myData.PartsData[0].SetChangePartTime();
+                //}
                 DataSaveCount++;
                 //show
                 //傳到myDate
@@ -291,7 +290,7 @@ namespace _18_203
         //軸3
         private void ax3_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
-            Thread.Sleep(300);
+            Thread.Sleep(800);
             try
             {
                 Byte[] buffer = new Byte[1024];
@@ -300,16 +299,20 @@ namespace _18_203
                 ssd.GetRs232ScrewData(buffer, 3);
                 ssd._sd[2].ScrewDateTime = DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss");
                 GetObjectBarcode();
-                //扣除數量
-                CurrentcountScrew.Count = CurrentcountScrew.Count - 1;//螺絲-1
-                //判斷沒螺絲就取新資料
-                if (CurrentcountScrew.Count <= 0)
-                {
-                    CurrentcountScrew.ReloadData(FilePathScrewCount);
-                    myData.PartsData[0].SetChangePartTime();
-                }
+                ////扣除數量
+                //CurrentcountScrew.Count = CurrentcountScrew.Count - 1;//螺絲-1
+                ////判斷沒螺絲就取新資料
+                //if (CurrentcountScrew.Count <= 0)
+                //{
+                //    CurrentcountScrew.ReloadData(FilePathParts1);
+                //    myData.PartsData[0].SetChangePartTime();
+                //}
                 DataSaveCount++;
                 //show
+                tb_Datetime_Ax3.Text = ssd._sd[2].ScrewDateTime;
+                tb_Torque_Ax3.Text = ssd._sd[2].TorqueResult;
+                tb_Angle_Ax3.Text = ssd._sd[2].AngleResult;
+                tb_Overrall_Ax3.Text = ssd._sd[2].OverrallStatus;
                 //傳到myDate
                 myData.SetScrewData(3, ssd._sd[2]);
             }
@@ -322,7 +325,7 @@ namespace _18_203
         //軸2
         private void ax2_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
-            Thread.Sleep(300);
+            Thread.Sleep(800);
             try
             {
                 Byte[] buffer = new Byte[1024];
@@ -331,14 +334,14 @@ namespace _18_203
                 ssd.GetRs232ScrewData(buffer, 2);
                 ssd._sd[1].ScrewDateTime = DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss");
                 GetObjectBarcode();
-                //扣除數量
-                CurrentcountScrew.Count = CurrentcountScrew.Count - 1;//螺絲-1
-                //判斷沒螺絲就取新資料
-                if (CurrentcountScrew.Count <= 0)
-                {
-                    CurrentcountScrew.ReloadData(FilePathScrewCount);
-                    myData.PartsData[0].SetChangePartTime();
-                }
+                ////扣除數量
+                //CurrentcountScrew.Count = CurrentcountScrew.Count - 1;//螺絲-1
+                ////判斷沒螺絲就取新資料
+                //if (CurrentcountScrew.Count <= 0)
+                //{
+                //    CurrentcountScrew.ReloadData(FilePathParts1);
+                //    myData.PartsData[0].SetChangePartTime();
+                //}
                 DataSaveCount++;
                 //show
                 tb_Datetime_Ax2.Text = ssd._sd[1].ScrewDateTime;
@@ -357,7 +360,7 @@ namespace _18_203
         //軸1
         private void ax1_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
-            Thread.Sleep(300);
+            Thread.Sleep(800);
             try
             {
                 Byte[] buffer = new Byte[1024];
@@ -366,14 +369,14 @@ namespace _18_203
                 ssd.GetRs232ScrewData(buffer, 1);
                 ssd._sd[0].ScrewDateTime = DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss");
                 GetObjectBarcode();
-                //扣除數量
-                CurrentcountScrew.Count--;//螺絲-1
-                //判斷沒螺絲就取新資料
-                if (CurrentcountScrew.Count <= 0)
-                {
-                    CurrentcountScrew.ReloadData(FilePathScrewCount);
-                    myData.PartsData[0].SetChangePartTime();
-                }
+                ////扣除數量
+                //CurrentcountScrew.Count--;//螺絲-1
+                ////判斷沒螺絲就取新資料
+                //if (CurrentcountScrew.Count <= 0)
+                //{
+                //    CurrentcountScrew.ReloadData(FilePathParts1);
+                //    myData.PartsData[0].SetChangePartTime();
+                //}
                 DataSaveCount++;
                 //show
                 tb_Datetime_Ax1.Text = ssd._sd[0].ScrewDateTime;
@@ -409,14 +412,7 @@ namespace _18_203
                     ssd.SaveScrewData(filePath, x,NumOfAxis);
                     NoBarcodeSeriealNo++;
                 }
-                CurrentcountScrew.SaveCountToFile(FilePathScrewCount);
-                //if (NumOfAxis==3)
-                //{
-                //    CurrentcountSite.SaveCountToFile(FilePathSiteCount);
-                //}
-                //CurrentcountBottomCap.SaveCountToFile(FilePathBottomCapCount);
-                //CurrentcountRS.SaveCountToFile(FilePathRSCount);
-                //CurrentcountTopCap.SaveCountToFile(FilePathTopCapCount);
+                CurrentcountScrew.SaveCountToFile(FilePathParts1);
                 //PC->PLC寫檔完成
                 PLC1.Write(PLCSaveScrewDataFinish, 1);
                 DataSaveCount = 0;
@@ -438,9 +434,11 @@ namespace _18_203
         private void pb_SetPartNo_Click(object sender, EventArgs e)
         {
             ScrewPartNo = tb_ScrewPartNo.Text;
+            BodyBarcodeCheckCode = tbBodyBarcodeCheckCode.Text;
             XLWorkbook wb = new XLWorkbook(initailFilePath);
             var ws = wb.Worksheet(1);
             ws.Cell("E2").Value = ScrewPartNo;
+            ws.Cell("F2").Value = BodyBarcodeCheckCode;
             ws.Columns().AdjustToContents();
             wb.Save();
             ws.Dispose();
@@ -448,11 +446,11 @@ namespace _18_203
         }
         private void pb_LoadScrew_Click(object sender, EventArgs e)
         {
-            CurrentcountScrew.LoadData(FilePathScrewCount);
+            CurrentcountScrew.LoadData(FilePathParts1);
         }
         private void pb_ReLoadScrew_Click(object sender, EventArgs e)
         {
-            CurrentcountScrew.ReloadData(FilePathScrewCount);
+            CurrentcountScrew.ReloadData(FilePathParts1);
             myData.PartsData[0].SetChangePartTime();
         }
         //檢查工件條碼
@@ -513,17 +511,7 @@ namespace _18_203
         //取得物件資料
         private void GetObjectData()
         {
-            CurrentcountScrew.LoadData(FilePathScrewCount);
-            //if (NumOfAxis == 3)
-            //{
-            //    CurrentcountSite.LoadData(FilePathSiteCount);
-            //}
-            //CurrentcountRS.LoadData(FilePathRSCount);
-            //CurrentcountTopCap.LoadData(FilePathTopCapCount);
-            //if (NumOfAxis==4)
-            //{
-            //    CurrentcountBottomCap.LoadData(FilePathBottomCapCount);
-            //}
+            CurrentcountScrew.LoadData(FilePathParts1);
         }
         #endregion
         #region --螢幕顯示--
@@ -617,7 +605,7 @@ namespace _18_203
                     ObjectBarcodeAndCount obj = new ObjectBarcodeAndCount();
                     obj.Barcode = ss;
                     obj.Count = Convert.ToInt32(newstring[3]);
-                    obj.AddNewData(FilePathScrewCount);
+                    obj.AddNewData(FilePathParts1);
                 }
                 //如果都不符合
                 if (newstring[1] != ScrewPartNo)
@@ -653,39 +641,16 @@ namespace _18_203
         //檢查物件數量傳送給PLC
         private void CheckNoOfObject()
         {
+            Int16 v0 = 0, v1 = 1;
             //螺絲
             if (CurrentcountScrew.Count <= 0)
             {
-                PLC1.Write(PLCOutOfScrew, 0);
+                PLC1.Write(PLCOutOfScrew, v0);
             }
             else
             {
-                PLC1.Write(PLCOutOfScrew, 1);
+                PLC1.Write(PLCOutOfScrew, v1);
             }
-            //if (NumOfAxis==3)
-            //{
-            //    //固定承座
-            //    if (CurrentcountSite.Count <= 0)
-            //    {
-            //        PLC1.Write(PLCOutOfSite, 0);
-            //    }
-            //    else
-            //    {
-            //        PLC1.Write(PLCOutOfSite, 1);
-            //    }
-            //}
-            //if (NumOfAxis==4)
-            //{
-            //    //下蓋板
-            //    if (CurrentcountBottomCap.Count <= 0)
-            //    {
-            //        PLC1.Write(PLCOutOfBottomCap, 0);
-            //    }
-            //    else
-            //    {
-            //        PLC1.Write(PLCOutOfBottomCap, 1);
-            //    }
-            //}
         }
         #endregion
         #region --上報資料相關--
